@@ -9,6 +9,7 @@ import net.starly.reverietoken.context.MessageType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +26,7 @@ public class PlayerInteractListener implements Listener {
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItemInMainHand();
 
-        if (!(event.getHand() == EquipmentSlot.OFF_HAND)) return;
+        if (!(event.getHand() == EquipmentSlot.HAND)) return;
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         if (itemStack == null || itemStack.getType().equals(Material.AIR)) return;
 
@@ -36,6 +37,7 @@ public class PlayerInteractListener implements Listener {
 
         String locationString = nbtTagCompoundWrapper.getString("st-reverietoken");
         if (locationString == null || locationString.isEmpty()) return;
+
         event.setCancelled(true);
 
         String[] parts = locationString.split(",");
@@ -53,9 +55,12 @@ public class PlayerInteractListener implements Listener {
             float yaw = Float.parseFloat(parts[5]);
 
             Location retrievedLocation = new Location(world, x, y, z, yaw, pitch);
-            player.teleport(retrievedLocation);
 
             itemStack.setAmount(itemStack.getAmount() - 1);
+
+            ReverieToken.getInstance().getServer().getScheduler().runTask(ReverieToken.getInstance(), () ->
+                    player.teleport(retrievedLocation));
+
             MessageContent.getInstance().getMessageAfterPrefix(MessageType.NORMAL, "useReverieToken").ifPresent(player::sendMessage);
         } catch (NumberFormatException e) {
             MessageContent.getInstance().getMessageAfterPrefix(MessageType.ERROR, "incorrectLocationFormat").ifPresent(player::sendMessage);
