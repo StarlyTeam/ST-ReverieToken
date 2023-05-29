@@ -10,8 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ReverieToken extends JavaPlugin {
 
-    @Getter
-    private static ReverieToken instance;
+    @Getter private static ReverieToken instance;
 
     @Override
     public void onLoad() {
@@ -27,7 +26,7 @@ public class ReverieToken extends JavaPlugin {
             return;
         }
 
-        new Metrics(this, 18600);
+        new Metrics(this, 18602);
 
         // CONFIG
         saveDefaultConfig();

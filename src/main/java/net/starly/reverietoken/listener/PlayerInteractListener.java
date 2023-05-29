@@ -25,7 +25,7 @@ public class PlayerInteractListener implements Listener {
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItemInMainHand();
 
-        if (!(event.getHand() == EquipmentSlot.HAND)) return;
+        if (!(event.getHand() == EquipmentSlot.OFF_HAND)) return;
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         if (itemStack == null || itemStack.getType().equals(Material.AIR)) return;
 
@@ -36,6 +36,7 @@ public class PlayerInteractListener implements Listener {
 
         String locationString = nbtTagCompoundWrapper.getString("st-reverietoken");
         if (locationString == null || locationString.isEmpty()) return;
+        event.setCancelled(true);
 
         String[] parts = locationString.split(",");
         if (parts.length != 6) {
@@ -55,12 +56,9 @@ public class PlayerInteractListener implements Listener {
             player.teleport(retrievedLocation);
 
             itemStack.setAmount(itemStack.getAmount() - 1);
-
             MessageContent.getInstance().getMessageAfterPrefix(MessageType.NORMAL, "useReverieToken").ifPresent(player::sendMessage);
         } catch (NumberFormatException e) {
             MessageContent.getInstance().getMessageAfterPrefix(MessageType.ERROR, "incorrectLocationFormat").ifPresent(player::sendMessage);
         }
-
-        event.setCancelled(true);
     }
 }
